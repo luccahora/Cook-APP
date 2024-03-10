@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { View, Text, ScrollView, Alert } from "react-native";
-import { router } from "expo-router";
+import { router, useRouter } from "expo-router";
 
 import { styles } from "./styles";
 
 import { Ingredient } from "@/components/Ingredient";
 import { Selected } from "@/components/Selected";
+import { services } from "@/services";
 
-export default function Home() {
+export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<string[]>([]);
+  const [ingredients, setIngredients] = useState<IngredienteResponse[]>([]);
 
   function handleToggleSelected(value: string) {
     if (selected.includes(value)) {
@@ -26,6 +28,14 @@ export default function Home() {
     ]);
   }
 
+  function handleSearch() {
+    router.navigate("/recipes/");
+  }
+
+  useEffect(() => {
+    services.ingredients.findAll().then(setIngredients);
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
@@ -41,17 +51,22 @@ export default function Home() {
         contentContainerStyle={styles.ingredient}
         showsVerticalScrollIndicator={false}
       >
-        {Array.from({ length: 100 }).map((item, index) => (
+        {ingredients.map((item) => (
           <Ingredient
-            name={"Tomate"}
-            image={""}
-            selected={selected.includes(String(index))}
-            onPress={() => handleToggleSelected(String(index))}
+            key={item.id}
+            name={item.name}
+            image={`${services.storage.imagePath}/${item.image}`}
+            selected={selected.includes(item.id)}
+            onPress={() => handleToggleSelected(item.id)}
           />
         ))}
       </ScrollView>
       {selected.length > 0 && (
-        <Selected quantify={selected.length} onClear={handleClearSelected} />
+        <Selected
+          quantify={selected.length}
+          onClear={handleClearSelected}
+          onSearch={handleSearch}
+        />
       )}
     </View>
   );
