@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { View, Text, ScrollView, Alert } from "react-native";
-import { router, useRouter } from "expo-router";
+import { router } from "expo-router";
 
 import { styles } from "./styles";
 
@@ -11,7 +11,7 @@ import { services } from "@/services";
 export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<string[]>([]);
-  const [ingredients, setIngredients] = useState<IngredienteResponse[]>([]);
+  const [ingredients, setIngredients] = useState<IngredientResponse[]>([]);
 
   function handleToggleSelected(value: string) {
     if (selected.includes(value)) {
@@ -29,7 +29,7 @@ export default function Index() {
   }
 
   function handleSearch() {
-    router.navigate("/recipes/");
+    router.navigate("/recipes/" + selected);
   }
 
   useEffect(() => {
